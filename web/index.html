@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nightspire-22 · Forge+Market</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div id="hud-top-left">
+      <div id="hud-title">NIGHTSPIRE-22 · Forge+Market</div>
+      <div id="hud-status" class="connecting">CONNECTING…</div>
+      <div id="hud-avatar-note">avatar: voxel placeholder (final aWizard GLB pending)</div>
+    </div>
+    <div id="hud-top-right">
+      <div class="hint"><b>WASD</b> move · <b>Space</b> jump · <b>V</b> 1st/3rd person</div>
+      <div class="hint">hover mouse = look · drag = look · <b>Enter/T</b> chat</div>
+    </div>
+    <div id="chat-wrap">
+      <div id="chat-log"></div>
+      <input id="chat-input" maxlength="140" placeholder="chat… (Enter to send)" autocomplete="off" />
+    </div>
+    <div id="hud-footer">v0.1 grey-box — procedural stand-ins, final art pending</div>
+  </div>
+
+  <div id="offline-banner" class="hidden">OFFLINE — single player</div>
+
+  <!-- Entry overlay -->
+  <div id="overlay">
+    <div id="overlay-card">
+      <div class="ov-kicker">Panda Park · LOT-22</div>
+      <h1>NIGHTSPIRE-22</h1>
+      <div class="ov-sub">Forge + Market · walkable voxel tower</div>
+      <label class="ov-name">Display name
+        <input id="name-input" maxlength="16" placeholder="mage" autocomplete="off" />
+      </label>
+      <button id="enter-btn">Enter the Nightspire</button>
+      <div class="ov-controls">
+        WASD move · Space jump · V camera · mouse hover to look · Enter/T chat<br/>
+        Walk the market, climb the stairs to the balcony (F2), quarters (F3), crown (F4).
+      </div>
+      <div class="ov-note">Avatar is a voxel placeholder — the real aWizard model is pending approval.</div>
+      <label class="ov-server">Server (optional)
+        <input id="server-input" placeholder="ws://localhost:8787" autocomplete="off" />
+      </label>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
