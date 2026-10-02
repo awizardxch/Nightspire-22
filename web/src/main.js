@@ -5,8 +5,10 @@ import { makeWizard, makeNameSprite } from './avatar.js';
 import { Player } from './player.js';
 import { Net, resolveServerUrl } from './net.js';
 import { initUI, randomName } from './ui.js';
+import { createAudio } from './audio.js';
 
 const ui = initUI();
+const audio = createAudio();
 
 // ---------- renderer ----------
 const canvas = document.getElementById('scene');
@@ -98,7 +100,14 @@ ui.enterBtn.addEventListener('click', () => {
   ui.showHUD();
   ui.addChat(null, `welcome, ${name} — the forge is lit`);
   player.active = true;
+  audio.start(); // user gesture: safe to bring up WebAudio
   net.connect(customServer || resolveServerUrl(), name);
+});
+ui.muteBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const m = audio.toggleMute();
+  ui.muteBtn.textContent = m ? '🔇 muted' : '🔊 sound';
+  ui.muteBtn.classList.toggle('muted', m);
 });
 ui.nameInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') ui.enterBtn.click();
@@ -155,7 +164,11 @@ function animate() {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
   world.tick(dt, t);
-  if (started) player.update(dt, camera);
+  if (started) {
+    player.update(dt, camera);
+    // wind rises with altitude: still in the forge, audible on the balcony
+    if (audio.ready) audio.setWind(THREE.MathUtils.clamp((player.pos.y - 5) / 14, 0, 1));
+  }
   else {
     // idle camera drift behind the overlay
     camera.position.set(Math.sin(t * 0.08) * 26, 9, 30);

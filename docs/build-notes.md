@@ -2,6 +2,38 @@
 
 Running notes on the tower build. Newest at top.
 
+## 2026-10-02 — Phase 2: visitable + deeper (branch `tower-phase2`)
+
+- Per Speechless ("merge to main and keep building"): PR #1 merged to
+  `main` as `80a4db4`; Phase 2 continues on `tower-phase2`.
+- **Deploy path** — `docs/DEPLOY.md`: complete self-hosting guide (relay
+  on PC/VPS, `PORT` env, systemd template
+  `server/nightspire-server.service`, Caddy + nginx reverse-proxy
+  snippets with TLS, firewall notes, visitor join URL
+  `https://<host>/?server=wss://<host>/ws`). Proxy/systemd sections are
+  labeled templates — not end-to-end verified from the build environment.
+- **In-world depth** (`web/src/world.js`):
+  - Stairs F1→F2→F3→F4 were already present with collision; verified the
+    step-up chain and stairwell alignment. Fixed one visual clip: the F3
+    bed overlapped stair C — bed cluster moved east, clear of the steps.
+  - F2 balcony dressed: two lake-facing benches (solid) + two lantern
+    posts flanking the balcony door (emissive, no new point lights).
+  - F3 quarters dressed: rug with cyan inlay (walk-over), bookshelf with
+    glowing spines (solid), warm wall torch by the bed.
+  - F4 crown interior: cyan rune ring on the floor (additive, breathing),
+    the forge-heart — a slowly turning extruded heart in glowing orange —
+    floating above the flame (existing flame light stays the light
+    source).
+  - Collision polish: stairs, counter, stalls, benches, shelf, balcony
+    railing all solid; railing top rails block falling off the balcony.
+- **Procedural WebAudio ambience** (`web/src/audio.js`, license-clean, no
+  files): forge fire bed + random ember crackle pops, soft market murmur
+  wash, altitude-driven wind (still in the forge, audible on the
+  balcony). Starts on the entry click (autoplay-safe); mute toggle in the
+  HUD (`web/index.html`, `web/src/ui.js`, `web/src/main.js`,
+  `web/src/style.css`).
+- Protocol unchanged (v1.0) — no `docs/PROTOCOL.md` update needed.
+
 ## 2026-10-02 — voxel tower v0.1 (branch `voxel-tower-build`)
 
 - Built per `docs/HYTOPIA_INTEGRATION_SPEC.md` §§1–4 — Phases 1–3 in one
