@@ -1,5 +1,7 @@
 // world.js — procedural Nightspire-22 scene: tower, town, lake, sky.
-// ALL geometry is generated in code. No external assets.
+// ALL geometry is generated in code, with ONE exception: the framed
+// Nightspire market painting on F1 (a generated .webp vendored under
+// web/public/art/). No external assets otherwise.
 import * as THREE from 'three';
 
 export const PAL = {
@@ -481,6 +483,41 @@ export function buildWorld() {
     p(0xffb45e, 1.1, 9, sx, 2.25, sz);
   }
 
+  // ---- hanging Nightspire market painting (north wall, facing the entrance) ----
+  // Framed canvas on forged-metal frame, hung on chains from the wall top.
+  {
+    const paintTex = new THREE.TextureLoader().load('/art/nightspire-market-painting.webp');
+    paintTex.colorSpace = THREE.SRGBColorSpace;
+    paintTex.anisotropy = 4;
+    const frameMat = std(0x0d0d12, { metalness: 0.7, roughness: 0.35 }); // forged metal
+    const pic = new THREE.Group();
+    const W = 3.6, H = 2.4, F = 0.16;
+    const canvasMesh = new THREE.Mesh(new THREE.PlaneGeometry(W, H),
+      new THREE.MeshBasicMaterial({ map: paintTex }));
+    pic.add(canvasMesh);
+    const bar = (w, h, x, y) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.1), frameMat);
+      m.position.set(x, y, 0); pic.add(m);
+    };
+    bar(W + F * 2, F, 0, H / 2 + F / 2);    // top
+    bar(W + F * 2, F, 0, -H / 2 - F / 2);   // bottom
+    bar(F, H, -W / 2 - F / 2, 0);           // left
+    bar(F, H, W / 2 + F / 2, 0);            // right
+    // chains: frame top corners up to the wall top (y=5)
+    const chainMat = std(0x11131f, { metalness: 0.8, roughness: 0.4 });
+    const topY = H / 2 + F, wallTop = 5.0, picY = 2.7;
+    const len = wallTop - picY - topY;
+    for (const cx of [-W / 2 + 0.3, W / 2 - 0.3]) {
+      const ch = new THREE.Mesh(new THREE.BoxGeometry(0.07, len, 0.07), chainMat);
+      ch.position.set(cx, topY + len / 2, 0); pic.add(ch);
+      const mount = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.14), frameMat);
+      mount.position.set(cx, topY + len, 0); pic.add(mount);
+    }
+    pic.position.set(0, picY, 0.08);
+    pic.rotation.x = -0.045; // slight gallery tilt, top into the wall
+    group.add(pic);
+  }
+
   // ================= F2 furnishings =================
   box(2, 0.15, 2, benchMat, -2, 6.97, 3, true);              // table
   for (const [lx, lz] of [[-2.8, 2.2], [-1.2, 2.2], [-2.8, 3.8], [-1.2, 3.8]])
@@ -589,5 +626,5 @@ export function buildWorld() {
     ring.material.opacity = 0.72 + 0.28 * Math.sin(t * 2.1);
   }
 
-  return { scene, colliders, tick };
+  return { scene, colliders, tick, book };
 }
