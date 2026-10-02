@@ -37,7 +37,7 @@ Running notes on the tower build. Newest at top.
   `third_party/hytopia/NOTICE.md` needed; no CC0 packs used (100%
   procedural geometry — cleaner than the CC0 plan); nothing calls, embeds,
   or depends on hytopia.com. Canonical spelling "obsidian" throughout.
-- PR: voxel-tower-build → main (link below once opened).
+- PR: https://github.com/awizardxch/Nightspire-22/pull/1 (voxel-tower-build → main).
 
 ## 2026-09-30 — concept art v0.1
 
