@@ -15,6 +15,7 @@ export function initUI() {
     nameInput: el('name-input'), serverInput: el('server-input'),
     enterBtn: el('enter-btn'), banner: el('offline-banner'),
     muteBtn: el('mute-btn'),
+    hint: el('hover-hint'),
     onlineCount: 0,
   };
   try {
@@ -56,6 +57,14 @@ export function initUI() {
 
   ui.getName = () => sanitizeName(ui.nameInput.value, ui.nameInput.placeholder || randomName());
   ui.getServer = () => ui.serverInput.value.trim();
+
+  ui.showHint = (text, x, y) => {
+    ui.hint.textContent = text;
+    ui.hint.style.left = x + 'px';
+    ui.hint.style.top = y + 'px';
+    ui.hint.classList.remove('hidden');
+  };
+  ui.hideHint = () => ui.hint.classList.add('hidden');
 
   return ui;
 }

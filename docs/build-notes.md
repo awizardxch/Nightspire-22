@@ -2,6 +2,26 @@
 
 Running notes on the tower build. Newest at top.
 
+## 2026-10-02 — Phase 3: clickable Spellbook + market painting (branch `tower-phase3`)
+
+- Per Speechless: "We need spellbook inside somewhere when we click on it
+  the agent can go to the spellbook site and get a wallet. We need a
+  hanging image of the Nightspire market."
+- **Clickable Spellbook** (`web/src/main.js`, `ui.js`, `index.html`,
+  `style.css`): the floating F1 ledger is raycast-clickable — a
+  pointerdown→pointerup with <6px travel (so drag-look never fires it)
+  opens `https://spellbook.awizard.dev` in a new tab (`noopener`). Hover
+  shows a pointer cursor + floating hint "Spellbook — click to get your
+  wallet", with an occlusion check (floors/walls block the hint) so it
+  never shows through geometry. Cyan rune shimmer animation untouched.
+- **Hanging market painting** (`web/public/art/nightspire-market-painting.webp`,
+  renamed from the generated filename; json sidecars removed): framed
+  canvas on the F1 north wall facing the entrance, forged-metal voxel
+  frame, hung on two chains from the wall top with a slight gallery tilt.
+  The webp itself carries the "NIGHTSPIRE MARKET — circa 1423" plaque.
+- Protocol unchanged (v1.0). No HGAL/SDK code; the painting is our own
+  generated media, vendored in-repo.
+
 ## 2026-10-02 — Phase 2: visitable + deeper (branch `tower-phase2`)
 
 - Per Speechless ("merge to main and keep building"): PR #1 merged to

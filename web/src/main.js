@@ -144,6 +144,54 @@ ui.chatInput.addEventListener('keydown', (e) => {
   }
 });
 
+// ---------- clickable Spellbook ----------
+// Click = pointerdown→pointerup with <6px travel, so drag-look never fires it.
+// Opens the Spellbook site (get a wallet) in a new tab.
+const SPELLBOOK_URL = 'https://spellbook.awizard.dev';
+const raycaster = new THREE.Raycaster();
+const pointerNDC = new THREE.Vector2();
+let downPos = null;
+let hoverXY = null;
+function setNDC(e) {
+  pointerNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+  pointerNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+}
+// flat mesh list (built once) for the occlusion check — Points excluded
+const sceneMeshes = [];
+scene.traverse((o) => { if (o.isMesh) sceneMeshes.push(o); });
+function bookHit() {
+  raycaster.setFromCamera(pointerNDC, camera);
+  const hits = raycaster.intersectObject(world.book, true);
+  if (!hits.length) return false;
+  // occluded by something nearer? (floors, walls)
+  const occ = raycaster.intersectObjects(sceneMeshes, false);
+  return !(occ.length && occ[0].distance < hits[0].distance - 0.02);
+}
+canvas.addEventListener('pointerdown', (e) => { downPos = [e.clientX, e.clientY]; });
+canvas.addEventListener('pointerup', (e) => {
+  if (!downPos || !started) { downPos = null; return; }
+  const dx = e.clientX - downPos[0], dy = e.clientY - downPos[1];
+  downPos = null;
+  if (dx * dx + dy * dy > 36) return; // it was a drag-look
+  setNDC(e);
+  if (bookHit()) window.open(SPELLBOOK_URL, '_blank', 'noopener');
+});
+canvas.addEventListener('pointermove', (e) => { hoverXY = [e.clientX, e.clientY]; setNDC(e); });
+const projV = new THREE.Vector3();
+function updateBookHover() {
+  if (!started || !hoverXY) { canvas.style.cursor = ''; ui.hideHint(); return; }
+  if (bookHit()) {
+    canvas.style.cursor = 'pointer';
+    world.book.getWorldPosition(projV); projV.y += 0.9; projV.project(camera);
+    ui.showHint('Spellbook — click to get your wallet',
+      (projV.x * 0.5 + 0.5) * window.innerWidth,
+      (-projV.y * 0.5 + 0.5) * window.innerHeight);
+  } else {
+    canvas.style.cursor = '';
+    ui.hideHint();
+  }
+}
+
 // ---------- 20Hz move sender ----------
 let seq = 0;
 let lastSent = '';
@@ -164,6 +212,7 @@ function animate() {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
   world.tick(dt, t);
+  updateBookHover();
   if (started) {
     player.update(dt, camera);
     // wind rises with altitude: still in the forge, audible on the balcony
