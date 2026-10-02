@@ -1,0 +1,90 @@
+:root {
+  --cyan: #00d9ff;
+  --orange: #ff6600;
+  --bg: #060810;
+  --panel: rgba(10, 12, 24, 0.82);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+body { font-family: "Segoe UI", system-ui, sans-serif; color: #dfe8ff; }
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+.hidden { display: none !important; }
+
+/* ---------- HUD ---------- */
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+#hud-top-left { position: absolute; top: 14px; left: 16px; }
+#hud-title {
+  font-weight: 800; letter-spacing: 3px; font-size: 18px; color: #fff;
+  text-shadow: 0 0 12px var(--cyan);
+}
+#hud-status { margin-top: 6px; font-size: 12px; letter-spacing: 1px; }
+#hud-status.online { color: #7dffb0; }
+#hud-status.offline { color: #ffb45e; }
+#hud-status.connecting { color: #9fb4d8; }
+#hud-avatar-note { margin-top: 4px; font-size: 11px; color: #8fa0c8; font-style: italic; }
+#hud-top-right { position: absolute; top: 14px; right: 16px; text-align: right; }
+#hud-top-right .hint { font-size: 12px; color: #b9c6e8; margin-bottom: 4px; }
+#hud-top-right .hint b { color: var(--cyan); }
+#hud-footer {
+  position: absolute; bottom: 10px; right: 16px; font-size: 11px; color: #6b7a9e;
+}
+
+/* ---------- chat ---------- */
+#chat-wrap {
+  position: absolute; left: 16px; bottom: 14px; width: 340px; pointer-events: auto;
+}
+#chat-log {
+  max-height: 180px; overflow-y: auto; font-size: 13px; line-height: 1.45;
+  background: var(--panel); border: 1px solid rgba(0, 217, 255, 0.25);
+  border-radius: 8px; padding: 8px 10px; margin-bottom: 6px;
+  backdrop-filter: blur(4px);
+}
+#chat-log .sys { color: #8fa0c8; font-style: italic; }
+#chat-log .who { color: var(--cyan); font-weight: 700; }
+#chat-log .me .who { color: var(--orange); }
+#chat-input {
+  width: 100%; background: var(--panel); color: #eaf2ff;
+  border: 1px solid rgba(0, 217, 255, 0.35); border-radius: 8px;
+  padding: 8px 10px; font-size: 13px; outline: none;
+}
+#chat-input:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0,217,255,.35); }
+
+/* ---------- offline banner ---------- */
+#offline-banner {
+  position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
+  background: rgba(40, 20, 8, 0.9); border: 1px solid var(--orange); color: #ffd9b0;
+  padding: 8px 18px; border-radius: 20px; font-size: 13px; letter-spacing: 2px;
+  z-index: 6;
+}
+
+/* ---------- overlay ---------- */
+#overlay {
+  position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 50% 35%, rgba(26, 8, 43, 0.88), rgba(6, 8, 16, 0.96));
+}
+#overlay-card {
+  text-align: center; background: var(--panel); border: 1px solid rgba(0, 217, 255, 0.35);
+  border-radius: 16px; padding: 36px 48px; max-width: 480px;
+  box-shadow: 0 0 60px rgba(0, 217, 255, 0.12), 0 0 120px rgba(255, 102, 0, 0.08);
+}
+.ov-kicker { color: var(--cyan); letter-spacing: 4px; font-size: 12px; margin-bottom: 8px; }
+#overlay-card h1 {
+  margin: 0 0 4px; font-size: 44px; letter-spacing: 6px; color: #fff;
+  text-shadow: 0 0 18px var(--cyan), 0 0 46px rgba(255, 102, 0, 0.5);
+}
+.ov-sub { color: #b9c6e8; margin-bottom: 22px; letter-spacing: 1px; }
+.ov-name, .ov-server { display: block; font-size: 12px; color: #8fa0c8; margin-bottom: 16px; }
+.ov-name input, .ov-server input {
+  display: block; margin: 6px auto 0; width: 240px; text-align: center;
+  background: #0a0e1c; color: #fff; border: 1px solid rgba(0,217,255,.4);
+  border-radius: 8px; padding: 9px; font-size: 15px; outline: none;
+}
+#enter-btn {
+  font-size: 17px; letter-spacing: 2px; padding: 13px 34px; cursor: pointer;
+  color: #06121a; background: linear-gradient(135deg, var(--cyan), #7deeff);
+  border: none; border-radius: 10px; font-weight: 800; margin: 6px 0 18px;
+  box-shadow: 0 0 24px rgba(0, 217, 255, 0.45);
+}
+#enter-btn:hover { filter: brightness(1.12); }
+.ov-controls { font-size: 12.5px; color: #9fb0d8; line-height: 1.7; margin-bottom: 12px; }
+.ov-note { font-size: 11.5px; color: #6b7a9e; font-style: italic; margin-bottom: 14px; }

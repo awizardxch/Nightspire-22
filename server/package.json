@@ -1,0 +1,1 @@
+{"dependencies":{"ws":"^8.18.0"},"description":"Self-hosted WebSocket multiplayer server for the Nightspire-22 voxel tower.","engines":{"node":">=18"},"main":"server.js","name":"nightspire-22-server","private":true,"scripts":{"start":"node server.js","test":"node smoke-test.js"},"version":"1.0.0"}
