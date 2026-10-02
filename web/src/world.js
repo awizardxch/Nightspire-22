@@ -63,6 +63,42 @@ const signTex = canvasTex(1024, 160, (g, w, h) => {
   g.fillText('Panda Park · LOT-22', w / 2, h / 2 + 4);
 });
 
+// cyan rune ring for the F4 crown floor: transparent bg, runes on a circle
+const runeRingTex = canvasTex(256, 256, (g, w, h) => {
+  const rnd = mulberry32(777);
+  const cx = w / 2, cy = h / 2;
+  g.strokeStyle = '#00d9ff'; g.shadowColor = '#00d9ff'; g.shadowBlur = 10;
+  g.lineWidth = 3;
+  g.beginPath(); g.arc(cx, cy, 112, 0, Math.PI * 2); g.stroke();
+  g.lineWidth = 2;
+  g.beginPath(); g.arc(cx, cy, 88, 0, Math.PI * 2); g.stroke();
+  g.lineWidth = 2.5;
+  for (let i = 0; i < 24; i++) {
+    const a = (i / 24) * Math.PI * 2 + rnd() * 0.1;
+    const x = cx + Math.cos(a) * 100, y = cy + Math.sin(a) * 100;
+    const s = 7 + rnd() * 6, k = Math.floor(rnd() * 3);
+    g.beginPath();
+    if (k === 0) { g.moveTo(x - s / 2, y); g.lineTo(x + s / 2, y); g.moveTo(x, y - s / 2); g.lineTo(x, y + s / 2); }
+    else if (k === 1) { g.arc(x, y, s / 2.4, 0, Math.PI * 2); }
+    else { g.moveTo(x - s / 2, y - s / 2); g.lineTo(x + s / 2, y - s / 2); g.lineTo(x, y + s / 2); g.closePath(); }
+    g.stroke();
+  }
+});
+
+// small extruded heart for the crown tip (the forge-heart)
+function heartGeo(s = 1) {
+  const sh = new THREE.Shape();
+  sh.moveTo(0, 0.28 * s);
+  sh.bezierCurveTo(0, 0.5 * s, -0.42 * s, 0.5 * s, -0.42 * s, 0.18 * s);
+  sh.bezierCurveTo(-0.42 * s, -0.12 * s, 0, -0.28 * s, 0, -0.58 * s);
+  sh.bezierCurveTo(0, -0.28 * s, 0.42 * s, -0.12 * s, 0.42 * s, 0.18 * s);
+  sh.bezierCurveTo(0.42 * s, 0.5 * s, 0, 0.5 * s, 0, 0.28 * s);
+  return new THREE.ExtrudeGeometry(sh, {
+    depth: 0.3 * s, bevelEnabled: true,
+    bevelThickness: 0.05 * s, bevelSize: 0.05 * s, bevelSegments: 2,
+  });
+}
+
 function slipTex(text) {
   return canvasTex(512, 160, (g, w, h) => {
     g.fillStyle = '#e8dcc0'; g.fillRect(0, 0, w, h);
@@ -271,6 +307,20 @@ export function buildWorld() {
     s.position.set(x, 7.15, 13.8); group.add(s);
     p(0xffb45e, 0.9, 8, x, 7.2, 13.8);
   }
+  // balcony benches facing the lake (solid)
+  for (const bx of [-2.2, 2.2]) {
+    box(1.8, 0.18, 0.55, trimMat, bx, 6.5, 12.6, true);       // seat
+    box(1.8, 0.75, 0.14, trimMat, bx, 6.95, 12.92, true);     // backrest
+    for (const [lx, lz] of [[-0.75, -0.15], [0.75, -0.15], [-0.75, 0.15], [0.75, 0.15]])
+      box(0.14, 0.42, 0.14, trimMat, bx + lx, 6.21, 12.6 + lz, false);
+  }
+  // lantern posts flanking the balcony door (emissive orbs; no extra point lights)
+  for (const px of [-2.7, 2.7]) {
+    box(0.12, 2.3, 0.12, trimMat, px, 7.15, 10.8, true);
+    box(0.3, 0.1, 0.3, trimMat, px, 8.32, 10.8, false);
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.17, 12, 12), glow(0xffd9a0));
+    orb.position.set(px, 8.05, 10.8); group.add(orb);
+  }
 
   // ---- F3 slab (y 10..11), stairwell opening x[3.9,5] z[0.5,7.6] ----
   box(8.9, 1, 9, trimMat, -0.55, 10.5, 4.5, true);
@@ -317,6 +367,19 @@ export function buildWorld() {
   const flameCore = new THREE.Mesh(new THREE.ConeGeometry(0.34, 1.1, 10), glow(0xffcc66));
   flameCore.position.set(0, 23.3, 4.5); group.add(flameCore);
   const flameLight = p(PAL.orange, 3.0, 42, 0, 23.8, 4.5);
+  // CYAN RUNE RING on the crown floor (additive, encircles the spire base)
+  const ring = new THREE.Mesh(new THREE.CircleGeometry(3.0, 48),
+    new THREE.MeshBasicMaterial({ map: runeRingTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(0, 16.07, 4.5);
+  group.add(ring);
+  // THE FORGE-HEART: glowing orange heart turning slowly above the flame
+  const heart = new THREE.Mesh(heartGeo(1.15), glow(PAL.orange));
+  heart.position.set(0, 24.9, 4.5);
+  group.add(heart);
+  const heartCore = new THREE.Mesh(heartGeo(0.62), glow(0xffcc66));
+  heartCore.position.set(0, 24.9, 4.5);
+  group.add(heartCore);
   // dark corner spires
   for (const [cx, cz] of [[-3.3, 1.7], [3.3, 1.7], [-3.3, 7.3], [3.3, 7.3]])
     box(0.7, 6, 0.7, darkMat, cx, 19, cz, true);
@@ -433,9 +496,9 @@ export function buildWorld() {
 
   // ================= F3: living quarters =================
   const bedMat = std(0x3a2c4a);
-  box(2.5, 0.7, 2, bedMat, -2.75, 11.35, 2.5, true);         // bed
-  box(0.8, 0.25, 0.8, std(0xd8cdb8), -3.3, 11.83, 2.1, false); // pillow
-  box(1.3, 0.12, 2.02, new THREE.MeshStandardMaterial({ color: 0x0a4a5a, emissive: 0x00d9ff, emissiveIntensity: 0.25 }), -1.9, 11.76, 2.5, false); // blanket
+  box(2.5, 0.7, 2, bedMat, -1.5, 11.35, 2.5, true);           // bed (clear of stair C)
+  box(0.8, 0.25, 0.8, std(0xd8cdb8), -2.05, 11.83, 2.1, false); // pillow
+  box(1.3, 0.12, 2.02, new THREE.MeshStandardMaterial({ color: 0x0a4a5a, emissive: 0x00d9ff, emissiveIntensity: 0.25 }), -0.65, 11.76, 2.5, false); // blanket
   box(1.7, 0.15, 1.5, benchMat, 2.35, 11.97, 5.75, true);    // table top
   for (const [lx, lz] of [[1.7, 5.2], [3, 5.2], [1.7, 6.3], [3, 6.3]])
     box(0.13, 0.9, 0.13, benchMat, lx, 11.45, lz, false);
@@ -446,6 +509,21 @@ export function buildWorld() {
   p(0xffb45e, 0.7, 7, 2.35, 12.6, 5.75);
   box(1, 1, 1, std(0x4a3626), -3.1, 11.5, 6.3, true);         // crates
   box(0.8, 0.8, 0.8, std(0x4a3626), -2.0, 11.4, 6.4, true);
+  // rug (walk-over, no collision)
+  box(3, 0.06, 2.2, std(0x2c1440, { roughness: 1 }), -1.5, 11.03, 4.6, false);
+  box(2.4, 0.065, 1.6, std(0x00d9ff, { emissive: 0x00d9ff, emissiveIntensity: 0.12 }), -1.5, 11.035, 4.6, false);
+  // bookshelf with glowing spines (solid)
+  box(0.5, 2.2, 2.4, std(0x241a30), 4.6, 12.1, 4.5, true);
+  const spineCols = [0x00d9ff, 0xff6600, 0x8a5cff, 0xffca7a, 0x00d9ff, 0xff6600];
+  spineCols.forEach((c, i) => {
+    box(0.08, 0.55, 0.22, new THREE.MeshBasicMaterial({ color: c }),
+      4.32, 11.75 + (i % 3) * 0.62, 3.7 + Math.floor(i / 3) * 1.1, false);
+  });
+  // warm wall torch by the bed (emissive flame + small light)
+  box(0.1, 0.5, 0.1, std(0x1a1f30), -1.5, 13.1, 0.12, false);
+  const torchFlame = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.3, 8), glow(0xffb45e));
+  torchFlame.position.set(-1.5, 13.45, 0.12); group.add(torchFlame);
+  p(0xffb45e, 0.65, 7, -1.5, 13.6, 0.6);
 
   // ================= TOWN (flat grid, dark voxel houses) =================
   const houseSpots = [
@@ -500,6 +578,15 @@ export function buildWorld() {
     flameCore.scale.set(fl, 1, fl);
     flameLight.intensity = 2.4 + 1.2 * Math.sin(t * 11) * Math.sin(t * 5.7);
     forgeLight.intensity = 2.0 + 0.8 * Math.sin(t * 9.3) * Math.sin(t * 4.1);
+    // forge-heart: slow turn + gentle bob, pulsing with the flame
+    heart.rotation.y = t * 0.55;
+    heartCore.rotation.y = -t * 0.4;
+    const hb = 24.9 + Math.sin(t * 1.4) * 0.18;
+    heart.position.y = hb; heartCore.position.y = hb;
+    const hp = 0.94 + 0.06 * Math.sin(t * 7.3);
+    heart.scale.set(hp, hp, hp); heartCore.scale.set(hp, hp, hp);
+    // rune ring breathes
+    ring.material.opacity = 0.72 + 0.28 * Math.sin(t * 2.1);
   }
 
   return { scene, colliders, tick };

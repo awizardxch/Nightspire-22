@@ -14,6 +14,7 @@ export function initUI() {
     chatLog: el('chat-log'), chatInput: el('chat-input'),
     nameInput: el('name-input'), serverInput: el('server-input'),
     enterBtn: el('enter-btn'), banner: el('offline-banner'),
+    muteBtn: el('mute-btn'),
     onlineCount: 0,
   };
   try {

@@ -1,0 +1,31 @@
+# nightspire-server.service — systemd unit template for the Nightspire-22 relay.
+#
+# Install:
+#   sudo cp nightspire-server.service /etc/systemd/system/
+#   # edit User= and WorkingDirectory= to match your layout, then:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now nightspire-server
+#
+# Template — adjust paths; not end-to-end verified from the build environment.
+
+[Unit]
+Description=Nightspire-22 multiplayer relay (WebSocket, port 8787)
+After=network.target
+
+[Service]
+Type=simple
+User=nightspire
+WorkingDirectory=/srv/nightspire/server
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+Environment=PORT=8787
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/nightspire/server
+
+[Install]
+WantedBy=multi-user.target
